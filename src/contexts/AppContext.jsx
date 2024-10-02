@@ -1,39 +1,76 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react"
+import { api } from "../services"
 
-export const AppContext = createContext({});
+export const AppContext = createContext({})
 
 export const AppContextProvider = (props) => {
-  const { children } = props;
+  const { children } = props
 
-  const [criador, setCriador] = useState("Jessica");
+  const [criador, setCriador] = useState("Jessica")
 
-  const [tarefas, setTarefas] = useState([
-    { id: 1, nome: "Item 1" },
-    { id: 2, nome: "Item 2" },
-    { id: 3, nome: "Item 3" },
-  ]);
+  const [tarefas, setTarefas] = useState([])
 
-  const adicionarTarefa = (nomeTarefa) => {
-    setTarefas((estadoAtual) => {
-      const tarefa = {
-        id: estadoAtual.length + 1,
-        nome: nomeTarefa,
-      };
+  const carregarTarefas = async () => {
+    const { data = [] } = await api.get("/tarefas")
 
-      return [...estadoAtual, tarefa];
+    setTarefas([
+      ...data,
+    ])
+
+    
+  }
+
+  const adicionarTarefa = async (nomeTarefa) => {
+    const { data: tarefa } = await api.post("/tarefas", {
+      nome: nomeTarefa,
+    })
+
+    setTarefas(estadoAtual => {
+      return [
+        ...estadoAtual, 
+        tarefa,
+      ]
     });
   };
 
-  const removerTarefa = (idTarefa) => {
+  const removerTarefa = async (idTarefa) => {
+   await api.delete(`tarefas/${idTarefa}`)
+
     setTarefas((estadoAtual) => {
       const tarefasAtualizadas = estadoAtual.filter(
-        (tarefa) => tarefa.id != idTarefa
+        tarefa => tarefa.id != idTarefa
       );
 
-      return [...tarefasAtualizadas];
+      return [
+        ...tarefasAtualizadas,
+      ]
     });
   };
 
+  const editarTarefa = async (idTarefa, nomeTarefa) => {
+    const { data: tarefaAtualizada } = await api.put(`tarefas/${idTarefa}`, {
+      nome: nomeTarefa,
+    })
+
+    setTarefas((estadoAtual) => {
+      const tarefasAtualizadas = estadoAtual.map((tarefa) => {
+        return tarefa.id == idTarefa
+          ? {
+              ...tarefa,
+              nome: tarefaAtualizada.nome,
+            }
+          : tarefa;
+      });
+      return [
+        ...tarefasAtualizadas
+      ]
+    });
+  };
+
+  useEffect(() => {
+    carregarTarefas()
+  }, []);
+  
   return (
     <AppContext.Provider
       value={{
@@ -41,6 +78,7 @@ export const AppContextProvider = (props) => {
         tarefas,
         adicionarTarefa,
         removerTarefa,
+        editarTarefa,
       }}
     >
       {children}
