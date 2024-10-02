@@ -1,16 +1,19 @@
-import { BrowserRouter } from "react-router-dom";
-import { Router } from "./Router";
+import { BrowserRouter } from "react-router-dom"
+import { Router } from "./Router"
 
-import { Cabecalho, Rodape } from "./Components";
+import { AppContextProvider } from "./contexts"
 
-import "./App.css";
+import "./App.css"
+
 
 const App = () => {
   return (
-    <BrowserRouter>
-    <Router/>
-    </BrowserRouter>
-  );
-};
+    <AppContextProvider>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </AppContextProvider>
+  )
+}
 
-export { App };
+export { App }

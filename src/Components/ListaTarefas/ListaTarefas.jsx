@@ -1,15 +1,25 @@
-import { ListaTarefasItem } from "./ListaTarefasItem/ListaTarefasItem"
+import { ListaTarefasItem } from "./ListaTarefasItem/ListaTarefasItem";
 
-import style from './ListaTarefas.module.css'
+import style from "./ListaTarefas.module.css";
+import { useAppContext } from "../../hooks";
 
-const ListaTarefas = (props) => {
-    const {tarefas} = props
-    
-    return (
-        <ul className= {style.ListaTarefa}>
-           {tarefas.map(item => <ListaTarefasItem key={item.id} nome={item.nome} />)}
-        </ul>
-    )
-}
+const ListaTarefas = () => {
+  const { tarefas } = useAppContext();
 
-export { ListaTarefas }
+  return (
+    <ul className={style.ListaTarefa}>
+        {!tarefas.length && (
+            <p>Não há tarefas adicionadas...</p>
+        )}
+      {tarefas.map((item) => (
+        <ListaTarefasItem 
+        key={item.id} 
+        id={item.id} 
+        nome={item.nome} 
+        />
+      ))}
+    </ul>
+  );
+};
+
+export { ListaTarefas };
