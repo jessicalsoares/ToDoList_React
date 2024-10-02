@@ -2,13 +2,21 @@ import { ListaTarefasItem } from "./ListaTarefasItem/ListaTarefasItem";
 
 import style from "./ListaTarefas.module.css";
 import { useAppContext } from "../../hooks";
+import { Loading } from "../Loading";
 
 const ListaTarefas = () => {
-  const { tarefas } = useAppContext();
+  const { tarefas, loadingCarregar } = useAppContext();
 
   return (
     <ul className={style.ListaTarefa}>
-        {!tarefas.length && (
+      {loadingCarregar && (
+        <p>
+          Carregando...
+          <Loading />
+        </p>
+      )}
+
+        {loadingCarregar && !tarefas.length && (
             <p>Não há tarefas adicionadas...</p>
         )}
       {tarefas.map((item) => (
